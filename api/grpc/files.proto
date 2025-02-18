@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "grpc/grpc_gen";
+
+service FileService {
+  rpc UploadFile(FileRequest) returns (FileResponse);
+}
+
+message FileRequest {
+  bytes bytes = 1;  // Часть файла
+  string filename = 2;
+}
+
+message FileResponse {
+  string message = 1;
+  int32 status = 2;
+}

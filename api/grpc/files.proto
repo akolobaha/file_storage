@@ -3,15 +3,15 @@ syntax = "proto3";
 option go_package = "grpc/grpc_gen";
 
 service FileService {
-  rpc UploadFile(FileRequest) returns (FileResponse);
+  rpc UploadFile (stream FileChunk) returns (FileUploadResponse);
 }
 
-message FileRequest {
-  bytes bytes = 1;  // Часть файла
+message FileChunk {
+  bytes chunk = 1;
   string filename = 2;
 }
 
-message FileResponse {
+message FileUploadResponse {
   string message = 1;
   int32 status = 2;
 }

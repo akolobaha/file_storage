@@ -3,9 +3,8 @@ package main
 import (
 	"file_storage/internal/db"
 	"file_storage/internal/handler"
-	pb "file_storage/pkg/grpc" // Импортируйте сгенерированные файлы
+	pb "file_storage/pkg/grpc"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -13,12 +12,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Println("Error loading .env file")
-	}
-
-	err = db.Init()
+	err := db.Init()
 	if err != nil {
 		panic("failed to connect database")
 	}

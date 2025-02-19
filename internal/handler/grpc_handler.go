@@ -1,23 +1,65 @@
 package handler
 
 import (
-	"context"
+	"file_storage/internal/db"
+	f "file_storage/internal/file"
 	pb "file_storage/pkg/grpc" // Импортируйте сгенерированные файлы
 	"fmt"
-	"io/ioutil"
+	"io"
+	"log"
+	"os"
 )
 
 type Server struct {
 	pb.UnimplementedFileServiceServer
 }
 
-func (s *Server) UploadFile(ctx context.Context, req *pb.FileRequest) (*pb.FileResponse, error) {
-	// Сохраните файл на диск
-	fmt.Println("Upload File")
-	err := ioutil.WriteFile(req.Filename, req.Bytes, 0644)
-	if err != nil {
-		return &pb.FileResponse{Message: "Failed to save file", Status: 1}, err
+func (s *Server) UploadFile(stream pb.FileService_UploadFileServer) error {
+	var file *os.File
+	var filename string
+
+	// Чтение данных из потока
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			// Сохраним модель в бд
+			repo := f.NewRepository(db.DB)
+			service := f.NewService(repo)
+			fileModel, err := service.CreatOrUpdate(filename)
+			//err = service.SaveFile(fileModel)
+			fmt.Println(fileModel)
+			if err != nil {
+				os.Remove("uploads/" + filename)
+				return err
+			}
+
+			// Завершение потока
+			return stream.SendAndClose(&pb.FileUploadResponse{
+				Message: "File uploaded successfully",
+				Status:  200,
+			})
+		}
+		if err != nil {
+			log.Printf("Failed to receive file chunk: %v", err)
+			return err
+		}
+
+		// Если файл еще не создан, создаем новый файл на диске
+		if file == nil {
+			filename = req.GetFilename()
+			file, err = os.Create("uploads/" + filename)
+			if err != nil {
+				log.Printf("Failed to create file: %v", err)
+				return err
+			}
+		}
+
+		// Записываем данные из чанка в файл
+		_, err = file.Write(req.GetChunk())
+		if err != nil {
+			log.Printf("Failed to write chunk to file: %v", err)
+			return err
+		}
 	}
-	return &pb.FileResponse{Message: "File uploaded successfully", Status: 0}, nil
 
 }

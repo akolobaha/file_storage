@@ -3,6 +3,7 @@ module file_storage
 go 1.22.3
 
 require (
+	github.com/go-faster/errors v0.7.1
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1

@@ -24,6 +24,10 @@ https://taskfile.dev/installation/
 - Статус `task migrateStatus`
 
 ### Запуск приложения
-``
+`cp .env.sample .env`
+`go run cmd/main.go`
 
-
+### Нагрузочные тесы
+- Устнвить [ghz](https://ghz.sh/docs/install)
+- `task testList`
+- `task testUpload`

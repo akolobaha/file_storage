@@ -1,0 +1,6 @@
+{
+  "call": "FileListService.FilesList",
+  "concurrency": 150,
+  "total": 50000,
+  "proto": "api/grpc/files.proto"
+}

@@ -1,0 +1,10 @@
+{
+  "call": "FileService.UploadFile",
+  "concurrency": 20,
+  "total": 1500,
+  "data": {
+    "chunk": "ZmlsZSBjaHVuayAx",
+    "filename": "test_file.txt"
+  },
+  "proto": "api/grpc/files.proto"
+}

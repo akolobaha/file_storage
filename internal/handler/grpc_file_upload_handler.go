@@ -1,21 +1,24 @@
 package handler
 
 import (
-	"context"
 	"file_storage/internal/db"
 	f "file_storage/internal/file"
+	"file_storage/internal/limiter"
 	pb "file_storage/pkg/grpc"
-	"fmt"
 	"io"
 	"log"
 	"os"
 )
 
-type Server struct {
+type ServerUpload struct {
 	pb.UnimplementedFileServiceServer
+	*limiter.Limiter
 }
 
-func (s *Server) UploadFile(stream pb.FileService_UploadFileServer) error {
+func (s *ServerUpload) UploadFile(stream pb.FileService_UploadFileServer) error {
+	s.Limiter.Acquire()
+	defer s.Limiter.Release()
+
 	var file *os.File
 	var filename string
 
@@ -26,9 +29,8 @@ func (s *Server) UploadFile(stream pb.FileService_UploadFileServer) error {
 			// Сохраним модель в бд
 			repo := f.NewRepository(db.DB)
 			service := f.NewService(repo)
-			fileModel, err := service.CreatOrUpdate(filename)
-			//err = service.SaveFile(fileModel)
-			fmt.Println(fileModel)
+			_, err := service.CreatOrUpdate(filename)
+
 			if err != nil {
 				os.Remove("uploads/" + filename)
 				return err
@@ -62,22 +64,4 @@ func (s *Server) UploadFile(stream pb.FileService_UploadFileServer) error {
 			return err
 		}
 	}
-}
-
-func (e Server) FilesList(ctx context.Context, empty *pb.Empty) (*pb.MultipleFile, error) {
-
-	repo := f.NewRepository(db.DB)
-	service := f.NewService(repo)
-
-	list, err := service.List()
-
-	multipleFile := &pb.MultipleFile{
-		Files: list,
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return multipleFile, nil
 }

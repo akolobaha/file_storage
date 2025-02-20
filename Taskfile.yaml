@@ -18,3 +18,9 @@ tasks:
   migrateStatus:
     cmds:
       - source .env && goose -dir=migrations postgres "postgres://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME?sslmode=disable" status
+  testList:
+    cmds:
+      - ghz --config ./test/load/file_list_service_test.json --insecure localhost:50051
+  testUpload:
+    cmds:
+      - ghz --config ./test/load/file_upload_service_test.json --insecure localhost:50051

@@ -20,7 +20,6 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	FileService_UploadFile_FullMethodName = "/FileService/UploadFile"
-	FileService_FilesList_FullMethodName  = "/FileService/FilesList"
 )
 
 // FileServiceClient is the client API for FileService service.
@@ -28,7 +27,6 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FileServiceClient interface {
 	UploadFile(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[FileChunk, FileUploadResponse], error)
-	FilesList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*MultipleFile, error)
 }
 
 type fileServiceClient struct {
@@ -52,22 +50,11 @@ func (c *fileServiceClient) UploadFile(ctx context.Context, opts ...grpc.CallOpt
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type FileService_UploadFileClient = grpc.ClientStreamingClient[FileChunk, FileUploadResponse]
 
-func (c *fileServiceClient) FilesList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*MultipleFile, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MultipleFile)
-	err := c.cc.Invoke(ctx, FileService_FilesList_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // FileServiceServer is the server API for FileService service.
 // All implementations must embed UnimplementedFileServiceServer
 // for forward compatibility.
 type FileServiceServer interface {
 	UploadFile(grpc.ClientStreamingServer[FileChunk, FileUploadResponse]) error
-	FilesList(context.Context, *Empty) (*MultipleFile, error)
 	mustEmbedUnimplementedFileServiceServer()
 }
 
@@ -80,9 +67,6 @@ type UnimplementedFileServiceServer struct{}
 
 func (UnimplementedFileServiceServer) UploadFile(grpc.ClientStreamingServer[FileChunk, FileUploadResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method UploadFile not implemented")
-}
-func (UnimplementedFileServiceServer) FilesList(context.Context, *Empty) (*MultipleFile, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FilesList not implemented")
 }
 func (UnimplementedFileServiceServer) mustEmbedUnimplementedFileServiceServer() {}
 func (UnimplementedFileServiceServer) testEmbeddedByValue()                     {}
@@ -112,36 +96,13 @@ func _FileService_UploadFile_Handler(srv interface{}, stream grpc.ServerStream) 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type FileService_UploadFileServer = grpc.ClientStreamingServer[FileChunk, FileUploadResponse]
 
-func _FileService_FilesList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FileServiceServer).FilesList(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FileService_FilesList_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FileServiceServer).FilesList(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // FileService_ServiceDesc is the grpc.ServiceDesc for FileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var FileService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "FileService",
 	HandlerType: (*FileServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "FilesList",
-			Handler:    _FileService_FilesList_Handler,
-		},
-	},
+	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "UploadFile",
@@ -149,5 +110,107 @@ var FileService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
+	Metadata: "files.proto",
+}
+
+const (
+	FileListService_FilesList_FullMethodName = "/FileListService/FilesList"
+)
+
+// FileListServiceClient is the client API for FileListService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type FileListServiceClient interface {
+	FilesList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*MultipleFile, error)
+}
+
+type fileListServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewFileListServiceClient(cc grpc.ClientConnInterface) FileListServiceClient {
+	return &fileListServiceClient{cc}
+}
+
+func (c *fileListServiceClient) FilesList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*MultipleFile, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MultipleFile)
+	err := c.cc.Invoke(ctx, FileListService_FilesList_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FileListServiceServer is the server API for FileListService service.
+// All implementations must embed UnimplementedFileListServiceServer
+// for forward compatibility.
+type FileListServiceServer interface {
+	FilesList(context.Context, *Empty) (*MultipleFile, error)
+	mustEmbedUnimplementedFileListServiceServer()
+}
+
+// UnimplementedFileListServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedFileListServiceServer struct{}
+
+func (UnimplementedFileListServiceServer) FilesList(context.Context, *Empty) (*MultipleFile, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FilesList not implemented")
+}
+func (UnimplementedFileListServiceServer) mustEmbedUnimplementedFileListServiceServer() {}
+func (UnimplementedFileListServiceServer) testEmbeddedByValue()                         {}
+
+// UnsafeFileListServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FileListServiceServer will
+// result in compilation errors.
+type UnsafeFileListServiceServer interface {
+	mustEmbedUnimplementedFileListServiceServer()
+}
+
+func RegisterFileListServiceServer(s grpc.ServiceRegistrar, srv FileListServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFileListServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&FileListService_ServiceDesc, srv)
+}
+
+func _FileListService_FilesList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FileListServiceServer).FilesList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FileListService_FilesList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FileListServiceServer).FilesList(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// FileListService_ServiceDesc is the grpc.ServiceDesc for FileListService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var FileListService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "FileListService",
+	HandlerType: (*FileListServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "FilesList",
+			Handler:    _FileListService_FilesList_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "files.proto",
 }

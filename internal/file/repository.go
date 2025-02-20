@@ -3,7 +3,6 @@ package file
 import (
 	"database/sql"
 	pb "file_storage/pkg/grpc"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
@@ -45,7 +44,6 @@ func (r *fileRepositoryImpl) Update(file File) error {
 
 func (r *fileRepositoryImpl) Get(name string) (File, error) {
 	file := File{}
-	fmt.Println(r.db)
 	query := `SELECT name, created_at, updated_at FROM files WHERE name = $1`
 	err := r.db.Get(&file, query, name)
 	if err != nil {

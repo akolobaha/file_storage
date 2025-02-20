@@ -74,16 +74,3 @@ func TestFilesList(t *testing.T) {
 	assert.NotNil(t, resp)
 	assert.NotEmpty(t, resp.Files)
 }
-
-//func TestUploadFileWithLoad(t *testing.T) {
-//	// Test with high load (150+ connections)
-//	for i := 0; i < 1500; i++ {
-//		go func(id int) {
-//			t.Run(fmt.Sprintf("TestUploadFile-%d", id), func(t *testing.T) {
-//				//TestUploadFile(t)
-//				//TestFilesList(t)
-//			})
-//		}(i)
-//	}
-//
-//}

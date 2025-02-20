@@ -15,7 +15,7 @@ func NewService(repo Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s Service) CreatOrUpdate(filename string) (File, error) {
+func (s Service) CreateOrUpdate(filename string) (File, error) {
 	file, err := s.repo.Get(filename)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

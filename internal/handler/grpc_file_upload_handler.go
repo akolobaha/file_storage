@@ -29,7 +29,7 @@ func (s *ServerUpload) UploadFile(stream pb.FileService_UploadFileServer) error 
 			// Сохраним модель в бд
 			repo := f.NewRepository(db.DB)
 			service := f.NewService(repo)
-			_, err := service.CreatOrUpdate(filename)
+			_, err := service.CreateOrUpdate(filename)
 
 			if err != nil {
 				os.Remove("uploads/" + filename)

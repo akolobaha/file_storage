@@ -12,7 +12,6 @@ func NewLimiter(count int) *Limiter {
 
 func (l *Limiter) Acquire() {
 	l.count <- struct{}{}
-
 }
 
 func (l *Limiter) Release() {

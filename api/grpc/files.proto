@@ -6,13 +6,11 @@ import "google/protobuf/timestamp.proto";  // Подключаем Google Timest
 
 service FileService {
   rpc UploadFile (stream FileChunk) returns (FileUploadResponse);
-
 }
 
 service FileListService {
   rpc FilesList(Empty) returns (MultipleFile);
 }
-
 
 message FileChunk {
   bytes chunk = 1;

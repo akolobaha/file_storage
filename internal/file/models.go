@@ -1,6 +1,8 @@
 package file
 
-import "time"
+import (
+	"time"
+)
 
 type File struct {
 	Name      string    `db:"name"`

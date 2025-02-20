@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"context"
 	"file_storage/internal/db"
 	f "file_storage/internal/file"
-	pb "file_storage/pkg/grpc" // Импортируйте сгенерированные файлы
+	pb "file_storage/pkg/grpc"
 	"fmt"
 	"io"
 	"log"
@@ -61,5 +62,22 @@ func (s *Server) UploadFile(stream pb.FileService_UploadFileServer) error {
 			return err
 		}
 	}
+}
 
+func (e Server) FilesList(ctx context.Context, empty *pb.Empty) (*pb.MultipleFile, error) {
+
+	repo := f.NewRepository(db.DB)
+	service := f.NewService(repo)
+
+	list, err := service.List()
+
+	multipleFile := &pb.MultipleFile{
+		Files: list,
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return multipleFile, nil
 }

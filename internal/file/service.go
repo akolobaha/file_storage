@@ -2,6 +2,7 @@ package file
 
 import (
 	"database/sql"
+	pb "file_storage/pkg/grpc"
 	"github.com/go-faster/errors"
 	"time"
 )
@@ -42,11 +43,6 @@ func (s Service) CreatOrUpdate(filename string) (File, error) {
 	return file, nil
 }
 
-func (s Service) SaveFile(file File) error {
-	err := s.repo.Create(file)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (s Service) List() ([]*pb.File, error) {
+	return s.repo.List()
 }
